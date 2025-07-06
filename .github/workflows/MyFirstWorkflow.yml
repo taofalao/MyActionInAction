@@ -1,0 +1,55 @@
+name: My First Workflow
+
+on: 
+  push:
+    branches: 
+      - main
+
+  repository_dispatch:
+    types: [test1, test2]
+
+  workflow_dispatch:
+     inputs:
+      homedrive:
+        description: "The home drive on the machine"
+        required: true
+      logLevel:
+        description: 'Log Level'
+        default: 'warning'
+        options:
+          - info
+          - warning
+          - debug
+      tag:
+        description: 'Apply tag after successful test run'
+        required: true
+        type: boolean
+      environment:
+        description: 'Environment to run the test'
+        type: environment
+        required: true
+  
+jobs:
+  MyFirstJob:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "👋 Hello World!"
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+
+      - name: List Files in repository
+        run: |
+          echo "The repository ${{ github.repository }} contains the following files:"
+          ls
+      - name: Print Variables
+        run: |
+          echo "Homedrive" ${{inputs.homedrive}}"
+          echo "Log Level" ${{inputs.logLevel}}"
+          echo "Tag" ${{inputs.tag}}"
+          echo "Environment" ${{inputs.environment}}"
+      - name: Payload
+        if: ${{ github.event_name == 'repository_dispatch' }}
+        run: |
+          echo "Payload: ${{ toJSON(github.event.client_payload) }}"
+
+          

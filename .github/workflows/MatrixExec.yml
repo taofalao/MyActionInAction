@@ -1,0 +1,59 @@
+name: Matrix Execution
+
+
+on:
+  workflow_dispatch:
+    inputs:
+      password:
+        required: true
+        
+
+jobs:
+  job_1:
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        os_version: [macos-latest, ubuntu-latest]
+        node_version: [12,14,16]
+
+    name: My First Matrix Job
+    runs-on: ${{ matrix.os_version }}
+    steps:
+      - uses: actions/setup-node@v3.9.1
+        with:
+          node-version: ${{ matrix.node_version }}
+      - name: The job has failed
+        if: ${{ failure() }}
+        run: |
+          echo "The job has failed"
+
+      - name: log
+        if: ${{ always() }}
+        run: echo "::error::error logs"
+
+      - name: Set Color
+        if: ${{ always() }}
+        id: color-gen
+        run: echo "SELECTED_COLOR=green" >> "$GITHUB_OUTPUT"
+      
+
+      - name: Get Color
+        if: ${{ always() }}
+        run: echo "${{ steps.color-gen.outputs.SELECTED_COLOR }}"      
+
+      - name: Get masked secret
+        if: ${{ always() }}
+        run: |
+          secret="${{ inputs.password }}"
+          echo "::add-mask::$secret"
+          echo "The masked secret is $secret" 
+          echo "action_state=yellow" >> $GITHUB_ENV
+
+      - run: |
+          echo "${{ env.action_state }}" # This will output yellow
+
+      - run: echo "### Hello World! :rocket:" >> $GITHUB_STEP_SUMMARY
+      - run: echo "### I Love this feature! :medal_sports:" >> $GITHUB_STEP_SUMMARY
+      - run: echo "<h1>Great Feature!</h1>" >> $GITHUB_STEP_SUMMARY
+      
