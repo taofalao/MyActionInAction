@@ -1,2 +1,16 @@
 name: "Taofalao Action in Action"
-de
+description: "Greet someone and always return 42."
+inputs:
+  who-to-greet:
+    description: 'Who to greet'
+    required: true
+    default: 'World'
+
+outputs:
+  answer:
+    description: "The answer to everything (Always 42)"
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.who-to-greet }}
