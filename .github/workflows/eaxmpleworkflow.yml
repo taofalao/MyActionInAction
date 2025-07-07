@@ -1,0 +1,10 @@
+name: example-workflow
+
+on:
+  workflow_dispatch:
+    
+
+defaults:
+  run:
+    shell: bash
+
